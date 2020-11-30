@@ -20,12 +20,14 @@ Möglichkeit). Daher lohnt es sich die Sache 2 mal anzuschauen.
 Einen Punkt Namen ändern:
 -------------------------
 
-1.  Den Namen suchen den man ändern will (z.B Lauberhorn):\
+1.  Den Namen suchen den man ändern will (z.B Lauberhorn):
+
     ![](.//media/image1.PNG)
 
 2.  Dann den Teil zwischen den beiden Anführungszeichen  " anpassen
     (In userem Fall ersetzen wir Lauberhorn durch den Text «Das ist ein
-    Gifpel»\
+    Gifpel»
+
     ![](.//media/image2.PNG)
 
 3.  Dabei zu beachten ist, dass man auch die Nummern ändern kann, dies
@@ -36,12 +38,15 @@ Einen Punkt Namen ändern:
 Einen Gruppennamen ändern:
 --------------------------
 
-1.  «var groups» suchen![](.//media/image3.PNG)
+1.  «var groups» suchen
+
+![](.//media/image3.PNG)
 
 2.  Die gewünschte Gruppe suchen (In userem Fall Orte)
 
 3.  Den Text zwischen den Anführungszeichen " anpassen (In userem
-    Fall wird Orte zu «newGroup»\
+    Fall wird Orte zu «newGroup»
+
     ![](.//media/image4.PNG)
 
 Um einen Punkt hinzuzufügen:
@@ -83,6 +88,7 @@ Um einen Punkt hinzuzufügen:
 
 5.  Nun muss man den Punkt noch einer Gruppe zuordnen, die Gruppen sind
     in «var groups» gespeichert:
+    
     ![](.//media/image3.PNG)
 
 6.  Nun sucht man die Gruppe in die man den Punkt hinzufügen möchte, in
@@ -159,7 +165,7 @@ Um eine neue Gruppe hinzuzufügen:
     den Namen der Gruppe, Die folgende Zahlengruppe repräsentieren die
     Farbwerte (Siehe auch Anleitung für Farbänderung) und die letzte
     Zahlenmenge sind sämtliche Punkte
-    
+
     ![](.//media/image15.PNG)
 
 6.  Natürlich dürfen die Gruppen nur Punkte enthalten die man auch
