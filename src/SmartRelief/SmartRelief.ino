@@ -28,8 +28,6 @@
 const int nLED = 64;
 const int maxNLED = 25;
 const int LEDBrightness = 20;
-const int maxNumberOfClients = 20;
-
 
 
 /* ----------------- Global variables ----------------- */
@@ -97,14 +95,10 @@ void loop() {
 /*
  * -------------------------------- Websocket Handlers -------------------------- 
  */
-
-uint8_t clients[maxNumberOfClients];
-int numberOfClients = 0;
  void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) { // When a WebSocket message is received
   switch (type) {
     case WStype_DISCONNECTED:             // if the websocket is disconnected
       Serial.printf("[%u] Disconnected!\n", num);
-      numberOfClients--;
       break;
     case WStype_CONNECTED: {              // if a new websocket connection is established
         IPAddress ip = webSocket.remoteIP(num);
