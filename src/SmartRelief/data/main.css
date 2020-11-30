@@ -1,0 +1,224 @@
+/* --------------- Main Sidebar Stylings ------------*/
+
+.wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.main {
+    width: 100%;
+    overflow: hidden;
+    transition: width 0.5s;
+}
+
+.main.thin {
+    width: 67%;
+}
+
+#connectSidebar,
+#ledSidebar {
+    height: 100%;
+}
+
+#connectSidebar {
+    transition: margin-right 0.5s;
+    min-width: 33%;
+    max-width: 33%;
+    margin-right: -33%;
+}
+
+#ledSidebar {
+    transition: margin-left 0.5s;
+    min-width: 66%;
+    max-width: 66%;
+    margin-left: -66%;
+}
+
+#connectSidebar.active {
+    margin-right: 0;
+}
+
+#ledSidebar.active {
+    margin-left: 0;
+}
+
+@media (max-width: 1024px) {
+    html,
+    body,
+    .wrapper,
+    main {
+        height: 100%;
+    }
+    .home-btn {
+        height: 50%;
+    }
+    .btn,
+    body {
+        font-size: 3rem;
+    }
+    #connectSidebar,
+    #ledSidebar {
+        min-width: 100%;
+        max-width: 100%;
+    }
+    #connectSidebar {
+        margin-right: -100%;
+    }
+    #ledSidebar {
+        margin-left: -100%;
+    }
+    .main.thin {
+        width: 0%;
+    }
+}
+
+
+/* --------------------- LED Groups Sidebar Stylings ------------- */
+
+#ledGroupWrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+#ledGroupNamesList {
+    width: 100%;
+}
+
+#ledGroupNamesList.thin {
+    width: 33%;
+}
+
+#ledGroupListContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.ledPointsWrapper {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.ledPointsWrapper.active {
+    width: 66%;
+    height: 100%;
+}
+
+.ledPointsWrapper,
+#ledGroupNamesList {
+    transition: width 0.5s;
+}
+
+
+/* --------------------- LED Group stylings ---------------- */
+
+.ledGroupContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.ledGroupContainer img {
+    width: 3em;
+    height: 3em;
+}
+
+.ledGroupContainer span {
+    margin: auto 0;
+}
+
+.ledInputWrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5em;
+}
+
+.ledGroupText {
+    display: block;
+    width: 70%;
+    text-align: left;
+}
+
+.ledText {
+    width: 75%;
+}
+
+.ledSwitch {
+    width: 25%;
+}
+
+
+/*-------------------------------------------------------------------SLIDERS------------------------------------------------*/
+
+
+/* The switch - the box around the slider */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 120px;
+    height: 68px;
+    color: white;
+    margin-right: 0.5em;
+}
+
+
+/* Hide default HTML checkbox */
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 52px;
+    width: 52px;
+    left: 8px;
+    bottom: 8px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+input:checked+.slider {
+    background-color: #2196f3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(52px);
+    -ms-transform: translateX(52px);
+    transform: translateX(52px);
+}
+
+
+/* Rounded sliders */
+
+.slider.round {
+    border-radius: 68px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}

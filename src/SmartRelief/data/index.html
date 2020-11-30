@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SmartRelief</title>
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <!-- Script with Information about Points-->
+    <script src="variables.js"></script>
+    <!-- Script that controls the rest and generates Menus-->
+    <script src="main.js"></script>
+
+
+</head>
+
+
+<body>
+    <div class="wrapper">
+
+        <section id="ledSidebar" class="position-relative">
+
+            <button class="ledSidebarCollapse btn btn-secondary btn-block">
+                << Sidebar schliessen </button>
+            <div id="ledGroupWrapper">
+                <div id="ledGroupNamesList">
+                    <button class="btn btn-danger btn-block" onclick="clearLED()">
+                                LEDs ausschalten
+                                <br />
+                                <small>
+                                    Aktive LEDs:
+                                    <span id="counter">
+                                        0
+                                    </span>
+                                </small>
+                            </button>
+                    <div id="ledGroupListContainer">
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <main class="main">
+            <button type="button" class="ledSidebarCollapse home-btn btn btn-info btn-block">
+                <span>LEDs steuern</span>
+            </button>
+            <button type="button" class="connectSidebarCollapse home-btn btn btn-info btn-block">
+                <span>Mit Netzwerk verbinden</span>
+            </button>
+
+        </main>
+
+        <section id="connectSidebar">
+            <button class="connectSidebarCollapse btn btn-secondary btn-block">
+                >> Sidebar schliessen
+            </button>
+            <button onclick="closeAccessPoint()" class="btn btn-warning btn-block">
+                Das SmartRelief Netzwerk schliessen </br>
+                <small>Nachdem das SmartRelief mit dem eigenen WLAN verbunden wurde, kann das SmartRelief eigene Netz
+                    geschlossen werden. Sollte dieses wieder gebraucht werden, kann das Smart Relief einfach
+                    neugestartet werden</small>
+            </button>
+            <button class="btn btn-primary btn-block" type="button" data-toggle="collapse" data-target="#connectToWLANForm" aria-expanded="false" aria-controls="connectToWLANForm">
+                Mit dem eigenen WLAN Neztwerk verbinden
+            </button>
+            </p>
+            <div class="collapse" id="connectToWLANForm">
+                <div class="card card-body">
+                    <form action='connect' method='POST'>
+                        <form>
+                            <div class="form-group">
+                                <label for="ssidInput">Netzwerk Name</label>
+                                <input name="ssid" class="form-control" id="ssidInput" aria-describedby="ssidHelp" placeholder="Netwerk Name">
+                                <small id="ssidHelp" class="form-text text-muted">We'll never share your email with
+                                    anyone
+                                    else.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="wlanPasswordInput">Password</label>
+                                <input name="password" type="password" class="form-control" id="wlanPasswordInput" placeholder="Password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Verbinden</button>
+                        </form>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>
