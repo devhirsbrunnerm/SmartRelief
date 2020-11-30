@@ -107,7 +107,9 @@ Um einen Punkt hinzuzufügen:
 Um die Farbe einer Gruppe zu ändern:
 ------------------------------------
 
-1.  «var groups» finden:![](.//media/image3.PNG)
+1.  «var groups» finden:
+
+![](.//media/image3.PNG)
 
 2.  Die Zeile finden bei der man die Farbe ändern möchte (Wir werden
     hier die Farbe der Gruppe Gletscher ändern).
@@ -139,7 +141,9 @@ Um eine neue Gruppe hinzuzufügen:
 2.  Auch bei den Gruppen ist ganz am Schluss jeder Zeile ein Komma (Bis
     auf die letzte), daher bevor wir eine neue Zeile einfügen, setzen
     wir am Schluss der letzten Zeile ein
-    Komma:![](.//media/image12.PNG)
+    Komma:
+    
+    ![](.//media/image12.PNG)
 3.  Am einfachsten ist es hier eine Gruppe zu kopieren (Zeile markieren
     -\> rechtsklick --\> Kopieren -\> Eine neue Zeile erstellen -\> Auf
     neue Zeile klicken -\> Einfügen
@@ -147,12 +151,15 @@ Um eine neue Gruppe hinzuzufügen:
 ![](.//media/image13.PNG)
 
 4.  Das Komma auf der letzten Zeile
-    entfernen:![](.//media/image14.PNG)
+    entfernen:
+    
+    ![](.//media/image14.PNG)
 
 5.  Anschliessend die Werte anpassen (Der erste Text bezieht sich auf
     den Namen der Gruppe, Die folgende Zahlengruppe repräsentieren die
     Farbwerte (Siehe auch Anleitung für Farbänderung) und die letzte
     Zahlenmenge sind sämtliche Punkte
+    
     ![](.//media/image15.PNG)
 
 6.  Natürlich dürfen die Gruppen nur Punkte enthalten die man auch
