@@ -1,5 +1,6 @@
 /*
  * This is the Arduino Sketch for the SmartRelief project. It hosts a webserver and controls a RGB Matrix based on the input from the websocket from a connected client
+ * A lot of this code was inspired by https://tttapa.github.io/ESP8266/Chap14%20-%20WebSocket.html
  * 
  * @author Marco Hirsbrunner
  * @version 1.0
@@ -14,7 +15,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <WiFiClient.h>
-#include <ArduinoOTA.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <FS.h>
@@ -24,28 +24,39 @@
 #define USE_SERIAL Serial
 #define pinMatrix D6
 
-/*------------------- Adjustable values ------------*/
-const int nLED = 64;
-const int maxNLED = 25;
-const int LEDBrightness = 20;
+/* ---------------------------------------------------------------------------------------------------------------
+ * ----------------------------------------- Benutzerdefinierte Werte --------------------------------------------
+ ----------------------------------------------------------------------------------------------------------------*/
+const int nLED = 64; // Wie viele LEDs sind vorhanden (Anzahl Matrixen x 2)
+const int maxNLED = 64; // Wie viele LEDs könne gleichzeitig angeschalten sein
+const int LEDBrightness = 20; // Wie hell sind die LED (von 0 bis 255)
+unsigned long timerInterval = 60 * 1000; //Nach wie langer inaktiver Zeit die LED abgeschaltet werden (*1000 da in Millisekunden -> 60 * 1000 = 60 Sekunden)
+const char *ssid = "SmartRelief"; // Der Name des Netzwerkes
+const char *password = "";   // Das Passwort für das Netzwerk (leer -> "" für kein Passwort)
 
 
-/* ----------------- Global variables ----------------- */
+
+/* ---------------------------------------------------------------------------------------------------------------
+ * --------------------------------------------------Global variables --------------------------------------------
+ ----------------------------------------------------------------------------------------------------------------*/
 bool LEDState[nLED]; //Saves wheter an LED is turned on or off (true for on, false for off)
+/*
+ * Saves the last time this LED was turned on. If only a limited number of LEDs may be turned on at the same time,
+ * the application will start by turning off the ones who have been on the longest. This lookup is done
+ * via this array.
+ */
 unsigned long LEDTime[nLED]; //Saves last time the LED was turned on
 
-unsigned long lastCall = 0; //Saves the last time something happened
+unsigned long lastCall = 0; //Saves the last time something happened, is needed if the LEDs should turn off after nothing happens
 boolean TimerBasedOff = false; //Saves wheter the LED got turned off because of timer (So it doesnt keep turning them off)
-unsigned long timerInterval = 60 * 1000; //Nach wie langer inaktiver Zeit die LED abgeschaltet werden (*1000 da in Millisekunden -> 60 * 1000 = 60 Sekunden)
 
 
 /* ------------------- Webserver and Wifi variables -------------- */
-ESP8266WiFiMulti wifiMulti;       // Create an instance of the ESP8266WiFiMulti class, called 'wifiMulti'
+ESP8266WiFiMulti wifiMulti;
 
 ESP8266WebServer server(80);       // Create a webserver object that listens for HTTP request on port 80
 WebSocketsServer webSocket(81);    // create a websocket server on port 81
-const char *ssid = "SmartRelief"; // The name of the Wi-Fi network that will be created
-const char *password = "";   // The password required to connect to it, leave blank for an open network
+
 const char* mdnsName = "smartrelief";
 
 
@@ -65,7 +76,7 @@ void setup() {
   strip.show(); // set all pixels to 'off'
   strip.setBrightness(LEDBrightness);
 
-  startWiFi();                 // Start a Wi-Fi access point, and try to connect to some given access points. Then wait for either an AP or STA connection
+  startWiFi();                 // Start a Wi-Fi access point
 
   startSPIFFS();               // Start the SPIFFS and list all contents
 
@@ -75,10 +86,6 @@ void setup() {
 
   startServer();               // Start a HTTP server with a file read handler and an upload handler
 
-  
-
-
-
   Serial.println("Finished Setup");
 }
 
@@ -87,20 +94,20 @@ void setup() {
  * Keeps looping while the device is running
  */
 void loop() {
-  webSocket.loop();                           // constantly check for websocket events
-  server.handleClient();  
+  webSocket.loop();
+  server.handleClient();
   checkTimer();
 }
 
-/*
- * -------------------------------- Websocket Handlers -------------------------- 
- */
+/* ---------------------------------------------------------------------------------------------------------------
+ * -------------------------------------------------- Websocket Handlers --------------------------------------------
+ ----------------------------------------------------------------------------------------------------------------*/ 
  void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) { // When a WebSocket message is received
   switch (type) {
-    case WStype_DISCONNECTED:             // if the websocket is disconnected
+    case WStype_DISCONNECTED: // When disconnected, just log it
       Serial.printf("[%u] Disconnected!\n", num);
       break;
-    case WStype_CONNECTED: {              // if a new websocket connection is established
+    case WStype_CONNECTED: { // When new client connected, log it and send them the current LED status.
         IPAddress ip = webSocket.remoteIP(num);
         Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
         String json = parseLedDataToJson();
@@ -108,12 +115,13 @@ void loop() {
         webSocket.sendTXT(num, json);
       }
       break;
-    case WStype_TEXT:                     // if new text data is received
+    case WStype_TEXT: //When recieving new data parse it, adjust LEDs, send Update to Client.
       Serial.printf("[%u] get Text: %s\n", num, payload);
       String LED = String((char *) &payload[0]);
-      if(LED[0] != 'u') {
+      if(LED[0] != 'u') { // Clients will ask for an update every 3 seconds with simply a u
         turnOn(LED); //call function to turn on the requested LED. Example for LED String: "255,255,255,5,6,7,8,9". the first 3 Values define the Color of the LED
       }
+      // After adjusting LEDs or simply for updating the client, parse the LED data and send it via the websocket.
       String json = parseLedDataToJson();
       webSocket.sendTXT(num, json);
       break;
@@ -124,13 +132,16 @@ void loop() {
  * Send the actual data about the LED to the all WebSockets (In this case Clients connected via. Javascript websocket)
  */
 void resendDataForWebsocket(){
-   String json = parseLedDataToJson();
+   // String json = parseLedDataToJson();
    // For some reason this crashes the webserver, i have not been able to figure out why this happens so far.
    // It does not create an endless loop of sending and recieving, so i don't know why it crashes.
    // What is not possible like this right now, is that data gets live updated on other devices
    // webSocket.broadcastTXT(json);
 }
 
+/*
+ * Converts the LEDStates to a JSON Object to send via the websocket.
+ */
 String parseLedDataToJson() {
   String json = "{ ";
   for(int i = 0; i<nLED; i++){
@@ -145,9 +156,9 @@ String parseLedDataToJson() {
   return json;
 }
 
-/* 
- *  ------------------------------------------ LED HELPER FUNCTIONS --------------------------------- 
- */
+/* ---------------------------------------------------------------------------------------------------------------
+ * -------------------------------------------------- LED Helper functions ---------------------------------------
+ ----------------------------------------------------------------------------------------------------------------*/ 
 
  /*
  * checks wheter all LED should be turned off based on the timer Interval
@@ -189,7 +200,7 @@ int nLEDOn() {
 }
 
 /*
- * turns on single led (usen in ledOn() )
+ * turns on single led (used in ledOn() )
  * 
  * Parameters: 
  *  int r: red Value (0-255)
@@ -205,7 +216,7 @@ void turnOnLed(int r, int g, int b, int led) {
     strip.setPixelColor(led, strip.Color(0, 0, 0));
   }
   else {
-    if (nLEDOn() <= maxNLED) {
+    if (nLEDOn() <= maxNLED) { // check wheter the amount of active LEDs exceeds the allowed maximum
       Serial.print("The counter equals: ");
       Serial.println(nLEDOn());
       Serial.println("accepted To turn on LED");
@@ -239,6 +250,9 @@ void turnOn(String LED) {
     WiFi.softAPdisconnect(true);
   }
   else {
+    /*
+     * Parse the recieved comma seperated value string into the values.
+     */
     int ledArrayLength = countArgs(LED);
     int ledArray[ledArrayLength]; //Create a Array large enough to store all the numbers from LED String
     String charBuf = ""; //Empty all charBuf Saves,
@@ -309,24 +323,14 @@ int getOldestLED() {
 }
 
 
-/*
- * ---------------------------------------------- Startup Helpers ------------------------------------- 
- */
+/* ---------------------------------------------------------------------------------------------------------------
+ * -------------------------------------------------- Startup function  ------------------------------------------
+ ----------------------------------------------------------------------------------------------------------------*/ 
+void startServer() {
 
-void startServer() { // Start a HTTP server with a file read handler and an upload handler                     // go to 'handleFileUpload'
-
-  server.on("/connect", HTTP_POST, handleConnect);
-  server.on("/ipinfo", handleIPInfo);
-  server.onNotFound(handleNotFound);          // if someone requests any other file or page, go to function 'handleNotFound'
-
-  server.serveStatic("/", SPIFFS, "/index.html"); //on no adress request send the index page stored in SPIFFS
-  server.serveStatic("/main.css", SPIFFS, "/main.css"); //on http server request send the files from SPIFFS
-  server.serveStatic("/preview_icon.png", SPIFFS, "/preview_icon.png");
-  server.serveStatic("/main.js", SPIFFS, "/main.js");
-  server.serveStatic("/variables.js", SPIFFS, "/variables.js");
-  server.serveStatic("/bootstrap.min.js", SPIFFS, "/bootstrap.min.js");
-  server.serveStatic("/bootstrap.min.css", SPIFFS, "/bootstrap.min.css");
-  server.serveStatic("/jquery.min.js", SPIFFS, "/jquery.min.js");
+  server.on("/connect", HTTP_POST, handleConnect); // this method is used to connect to an existing network
+  server.on("/ipinfo", handleIPInfo); // this method is used to get the ip adress of the board in the home network
+  server.onNotFound(handleNotFound); // if someone requests any other file or page, go to function 'handleNotFound'
                
   server.begin(); // start the HTTP server and check if the file exists
   Serial.println("HTTP server started.");
@@ -335,28 +339,18 @@ void startServer() { // Start a HTTP server with a file read handler and an uplo
 void startWiFi() { // Start a Wi-Fi access point, and try to connect to some given access points. Then wait for either an AP or STA connection
   Serial.println();
   Serial.println("Connected!");
-  Serial.print("IP address for network ");
+  Serial.print("IP address for own network ");
   Serial.print(" : ");
   Serial.println(WiFi.localIP());
-  Serial.print("IP address for network ");
+  Serial.print("IP address for home network ");
   Serial.print(" : ");
   Serial.print(WiFi.softAPIP());
   
-  WiFi.mode(WIFI_AP_STA);  
+  WiFi.mode(WIFI_AP_STA); // Set the mode so that it works as a station and connects to an access point 
   WiFi.softAP(ssid, password);             // Start the access point
   Serial.print("Access Point \"");
   Serial.print(ssid);
   Serial.println("\" started\r\n");
-
-  Serial.println("Connecting");
-  if(WiFi.softAPgetStationNum() == 0) {      // If the ESP is connected to an AP
-    Serial.print("Connected to ");
-    Serial.println(WiFi.SSID());             // Tell us what network we're connected to
-    Serial.print("IP address:\t");
-    Serial.print(WiFi.localIP());            // Send the IP address of the ESP8266 to the computer
-  } else {                                   // If a station is connected to the ESP SoftAP
-    Serial.print("Station connected to ESP8266 AP");
-  }
   Serial.println("\r\n");
 }
 
@@ -389,7 +383,9 @@ void startMDNS() { // Start the mDNS responder
 }
 
 
-/* --------------------------------------------------- Server Handlers --------------------------------- */
+/* ---------------------------------------------------------------------------------------------------------------
+ * -------------------------------------------------- Server Handlers --------------------------------------------
+ ----------------------------------------------------------------------------------------------------------------*/ 
 /*
  * handels the connect to a other network, reads the Arguments that were given (ssid and password) from the server.args map. if no connection after ~7sec break out.
  */
@@ -430,7 +426,6 @@ bool handleFileRead(String path) { // send the right file to the client (if it e
   Serial.println("handleFileRead: " + path);
   if (path.endsWith("/")) path += "index.html";          // If a folder is requested, send the index file
   String contentType = getContentType(path);             // Get the MIME type
-  String pathWithGz = path + ".gz";
   if (SPIFFS.exists(path)) { // If the file exists, either as a compressed archive, or normal                                      // Use the compressed verion
     File file = SPIFFS.open(path, "r");                    // Open the file
     size_t sent = server.streamFile(file, contentType);    // Send it to the client
@@ -447,7 +442,6 @@ String getContentType(String filename) { // determine the filetype of a given fi
   else if (filename.endsWith(".css")) return "text/css";
   else if (filename.endsWith(".js")) return "application/javascript";
   else if (filename.endsWith(".ico")) return "image/x-icon";
-  else if (filename.endsWith(".gz")) return "application/x-gzip";
   else if (filename.endsWith(".png")) return "image/png";
   return "text/plain";
 }
