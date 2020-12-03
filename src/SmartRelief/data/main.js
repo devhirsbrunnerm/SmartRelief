@@ -163,10 +163,18 @@ function handleWebSocketData(data) {
     for (let i = 0; i < Object.keys(points).length; i++) {
         let ledNumber = Object.keys(points)[i];
         if (led[ledNumber] == "1") {
-            document.getElementById(`ledInput-${ledNumber}`).checked = true;
-            count++;
+            try {
+                document.getElementById(`ledInput-${ledNumber}`).checked = true;
+                count++;
+            } catch (e) {
+                console.warn(e);
+            }
         } else {
-            document.getElementById(`ledInput-${ledNumber}`).checked = false;
+            try {
+                document.getElementById(`ledInput-${ledNumber}`).checked = false;
+            } catch (e) {
+                console.warn(e);
+            }
         }
     }
     document.getElementById("counter").innerHTML = count.toString();

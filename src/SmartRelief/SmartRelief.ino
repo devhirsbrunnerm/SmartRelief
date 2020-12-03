@@ -1,3 +1,4 @@
+
 /*
  * This is the Arduino Sketch for the SmartRelief project. It hosts a webserver and controls a RGB Matrix based on the input from the websocket from a connected client
  * A lot of this code was inspired by https://tttapa.github.io/ESP8266/Chap14%20-%20WebSocket.html
@@ -29,7 +30,7 @@
  ----------------------------------------------------------------------------------------------------------------*/
 const int nLED = 64; // Wie viele LEDs sind vorhanden (Anzahl Matrixen x 2)
 const int maxNLED = 64; // Wie viele LEDs könne gleichzeitig angeschalten sein
-const int LEDBrightness = 20; // Wie hell sind die LED (von 0 bis 255)
+const int LEDBrightness = 250; // Wie hell sind die LED (von 0 bis 255)
 unsigned long timerInterval = 60 * 1000; //Nach wie langer inaktiver Zeit die LED abgeschaltet werden (*1000 da in Millisekunden -> 60 * 1000 = 60 Sekunden)
 const char *ssid = "SmartRelief"; // Der Name des Netzwerkes
 const char *password = "";   // Das Passwort für das Netzwerk (leer -> "" für kein Passwort)
@@ -72,6 +73,7 @@ void setup() {
   delay(10); 
   Serial.println("\r\n");
   delay(2000); // wait for everything to get ready
+      WiFi.disconnect(); //disconnect from the current Network, program not made for multiple network connections
   strip.begin();
   strip.show(); // set all pixels to 'off'
   strip.setBrightness(LEDBrightness);
