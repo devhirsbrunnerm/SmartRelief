@@ -36,7 +36,6 @@ const char *ssid = "SmartRelief"; // Der Name des Netzwerkes
 const char *password = "";   // Das Passwort für das Netzwerk (leer -> "" für kein Passwort)
 
 
-
 /* ---------------------------------------------------------------------------------------------------------------
  * --------------------------------------------------Global variables --------------------------------------------
  ----------------------------------------------------------------------------------------------------------------*/
@@ -50,8 +49,8 @@ unsigned long LEDTime[nLED]; //Saves last time the LED was turned on
 
 unsigned long lastCall = 0; //Saves the last time something happened, is needed if the LEDs should turn off after nothing happens
 boolean TimerBasedOff = false; //Saves wheter the LED got turned off because of timer (So it doesnt keep turning them off)
-
-
+boolean isWifiDisconnected = false;
+unsigned long lastTimeConnectWasSucessful = 0;
 /* ------------------- Webserver and Wifi variables -------------- */
 ESP8266WiFiMulti wifiMulti;
 
@@ -70,10 +69,10 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(nLED, pinMatrix, NEO_GRB + NEO_KHZ80
  */
 void setup() {
   Serial.begin(115200);        // Start the Serial communication to send messages to the computer
+  Serial.setDebugOutput(true);
   delay(10); 
   Serial.println("\r\n");
   delay(2000); // wait for everything to get ready
-      WiFi.disconnect(); //disconnect from the current Network, program not made for multiple network connections
   strip.begin();
   strip.show(); // set all pixels to 'off'
   strip.setBrightness(LEDBrightness);
@@ -99,6 +98,7 @@ void loop() {
   webSocket.loop();
   server.handleClient();
   checkTimer();
+  checkWifi();
 }
 
 /* ---------------------------------------------------------------------------------------------------------------
@@ -340,6 +340,10 @@ void startServer() {
 
 void startWiFi() { // Start a Wi-Fi access point, and try to connect to some given access points. Then wait for either an AP or STA connection
   WiFi.mode(WIFI_AP_STA); // Set the mode so that it works as a station and connects to an access point 
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
+  WiFi.setAutoConnect(true);
+  WiFi.begin();
   WiFi.softAP(ssid, password);             // Start the access point
   Serial.print("Access Point \"");
   Serial.print(ssid);
@@ -348,13 +352,27 @@ void startWiFi() { // Start a Wi-Fi access point, and try to connect to some giv
   
   Serial.println();
   Serial.println("Connected!");
-  Serial.print("IP address for own network ");
+  Serial.print("Local IP");
   Serial.print(" : ");
   Serial.println(WiFi.localIP());
-  Serial.print("IP address for home network ");
+  Serial.print("Soft AP IP");
   Serial.print(" : ");
   Serial.print(WiFi.softAPIP());
 
+}
+
+void checkWifi() {
+    if(!isWifiDisconnected){
+      if(WiFi.status() != WL_CONNECTED) {
+        if(millis() - lastTimeConnectWasSucessful > 30000) {
+          Serial.println("------------ Disconnect from WiFi ----------------");
+          WiFi.disconnect();
+          isWifiDisconnected = true;
+        }
+      } else {
+        lastTimeConnectWasSucessful = millis();
+      }
+    }
 }
 
 void startSPIFFS() { // Start the SPIFFS and list all contents
@@ -402,10 +420,21 @@ void handleConnect() { //connect the http Server with the sent Network
      // Connecting to WiFi...
     Serial.print("Connecting to ");
     Serial.println(ssid);
-    while (WiFi.status() != WL_CONNECTED)
-    { 
-      delay(100);
+    int n = 0;
+    while ((WiFi.status() != WL_CONNECTED) && (n <= 40))           // max. 10 Versuche
+    {
+      delay(500);
       Serial.print(".");
+      n++;
+    }
+    WiFi.setAutoConnect(true);
+    WiFi.setAutoReconnect(true);
+    WiFi.persistent(true);
+    if(WiFi.status() == WL_CONNECTED) {
+      isWifiDisconnected = false;
+
+    } else {
+      WiFi.disconnect();
     }
     handleIPInfo();
   }
