@@ -1,5 +1,29 @@
 /* --------------- Main Sidebar Stylings ------------*/
 
+@media only screen and (min-width: 1024px) {
+    html {
+        font-size: 50%;
+    }
+}
+
+html {
+    font-size: 400%;
+}
+
+html,
+body,
+.wrapper,
+main {
+    height: 100%;
+}
+
+
+.main {
+    width: 100%;
+    overflow-y: scroll;
+    transition: margin 0.5s;
+}
+
 .wrapper {
     display: flex;
     align-items: stretch;
@@ -7,72 +31,31 @@
     overflow-x: hidden;
 }
 
-.main {
-    width: 100%;
-    overflow: hidden;
-    transition: width 0.5s;
-}
-
-.main.thin {
-    width: 67%;
-}
-
-#connectSidebar,
-#ledSidebar {
-    height: 100%;
-}
 
 #connectSidebar {
-    transition: margin-right 0.5s;
-    min-width: 33%;
-    max-width: 33%;
-    margin-right: -33%;
-}
-
-#ledSidebar {
-    transition: margin-left 0.5s;
-    min-width: 66%;
-    max-width: 66%;
-    margin-left: -66%;
+    height: 100%;
+    width: 100%;
+    transition: margin 0.5s;
+    margin-right: -100%;
 }
 
 #connectSidebar.active {
     margin-right: 0;
 }
 
-#ledSidebar.active {
+#led-wrapper {
+    height: 100%;
+    width: 100%;
+    transition: margin 0.5s;
+    margin-left: -100%;
+    display: flex;
+    flex-direction: row;
+}
+#led-wrapper.active {
     margin-left: 0;
 }
 
-@media (max-width: 1024px) {
-    html,
-    body,
-    .wrapper,
-    main {
-        height: 100%;
-    }
-    .home-btn {
-        height: 50%;
-    }
-    .btn,
-    body {
-        font-size: 3rem;
-    }
-    #connectSidebar,
-    #ledSidebar {
-        min-width: 100%;
-        max-width: 100%;
-    }
-    #connectSidebar {
-        margin-right: -100%;
-    }
-    #ledSidebar {
-        margin-left: -100%;
-    }
-    .main.thin {
-        width: 0%;
-    }
-}
+
 
 
 /* --------------------- LED Groups Sidebar Stylings ------------- */
@@ -85,11 +68,12 @@
 }
 
 #ledGroupNamesList {
-    width: 100%;
+    min-width: 100%;
+    margin-left: -100%;
+    height: 100%;
 }
-
-#ledGroupNamesList.thin {
-    width: 33%;
+#ledGroupNamesList.active {
+    margin-left: 0%;
 }
 
 #ledGroupListContainer {
@@ -99,19 +83,17 @@
 
 .ledPointsWrapper {
     width: 0;
-    height: 0;
-    overflow: hidden;
     overflow-y: scroll;
 }
 
 .ledPointsWrapper.active {
-    width: 66%;
-    height: 100%;
+    width: 100%;
 }
 
 .ledPointsWrapper,
-#ledGroupNamesList {
-    transition: width 0.5s;
+#ledGroupNamesList,
+#ledGroupWrapper {
+    transition: width 0.5s, margin 0.5s;
 }
 
 
@@ -122,11 +104,12 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding: 0.25rem;
 }
 
 .ledGroupContainer img {
-    width: 3em;
-    height: 3em;
+    width: 2rem;
+    height: 2rem;
 }
 
 .ledGroupContainer span {
@@ -136,7 +119,7 @@
 .ledInputWrapper {
     display: flex;
     justify-content: space-between;
-    margin: 0.5em;
+    margin: 0.3rem;
 }
 
 .ledGroupText {
@@ -151,6 +134,7 @@
 
 .ledSwitch {
     width: 25%;
+    text-align: right;
 }
 
 

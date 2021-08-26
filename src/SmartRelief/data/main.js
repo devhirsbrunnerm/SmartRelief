@@ -90,30 +90,18 @@ function initalizeSidebarToggles() {
     $('.connectSidebarCollapse').on('click', function() {
         console.log("switching connection sidebar");
         $('#connectSidebar').toggleClass('active');
-        $('.main').toggleClass('thin');
+        $('#led-wrapper').toggleClass('active');
     });
-
-    $('.ledSidebarCollapse').on('click', function() {
-        console.log("switching led sidebar");
-        $('#ledSidebar').toggleClass('active');
-        $('.main').toggleClass('thin');
-    });
-
-    console.log("switching led sidebar");
-    $('#ledSidebar').toggleClass('active');
-    $('.main').toggleClass('thin');
 }
 
 function toggleNav(index) {
     console.log("toggeling navigation " + index);
     if ($(`#ledPointsWrapper-${index}`).hasClass('active')) {
-        console.log('already has class');
-        $("#ledGroupNamesList").removeClass('thin');
+        $("#ledGroupNamesList").addClass('active');
         $(`#ledPointsWrapper-${index}`).removeClass('active');
     } else {
-        $(".ledPointsWrapper").removeClass('active');
         $(`#ledPointsWrapper-${index}`).addClass('active');
-        $("#ledGroupNamesList").addClass('thin');
+        $("#ledGroupNamesList").removeClass('active');
     }
 
 }
@@ -269,6 +257,13 @@ function createNav(groupIndex) {
     var wrap = document.createElement("div");
     wrap.setAttribute("class", "ledPointsWrapper");
     wrap.setAttribute("id", `ledPointsWrapper-${groupIndex}`)
+
+    var toggleButton = document.createElement("button");
+    toggleButton.innerText = "<< Zurück"
+    toggleButton.setAttribute('class', 'btn btn-secondary btn-block p-1')
+    toggleButton.setAttribute("onclick", `toggleNav(${groupIndex})`);
+    
+    wrap.appendChild(toggleButton);
 
     for (var i = 0; i < group[2].length; i++) {
         var div = document.createElement("label");

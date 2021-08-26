@@ -93,6 +93,23 @@ var groups = [
         [1, 2, 3, 5, 6, 7, 10, 11, 14, 40, 41, 51, ]
     ],
     ["Drahtseilbahn", [255, 0, 0],
-        [30, 43, ]
-    ]
+        [ ]
+    ],
+    ["Drahtseilbahn", [255, 0, 0],
+        [ ]
+    ],
+    ["Drahtseilbahn", [255, 0, 0],
+        [ ]
+    ],
+    ["Drahtseilbahn", [255, 0, 0],
+        [ ]
+    ],["Drahtseilbahn", [255, 0, 0],
+    [ ]
+],["Drahtseilbahn", [255, 0, 0],
+[ ]
+],["Drahtseilbahn", [255, 0, 0],
+[ ]
+],["Drahtseilbahn", [255, 0, 0],
+[ ]
+],
 ];

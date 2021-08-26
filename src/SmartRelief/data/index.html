@@ -20,45 +20,35 @@
 
 <body>
     <div class="wrapper">
-
-        <section id="ledSidebar" class="position-relative">
-
-            <button class="ledSidebarCollapse btn btn-secondary btn-block">
-                << Sidebar schliessen </button>
-            <div id="ledGroupWrapper">
-                <div id="ledGroupNamesList">
-                    <button class="btn btn-danger btn-block" onclick="clearLED()">
-                                LEDs ausschalten
-                                <br />
-                                <small>
-                                    Aktive LEDs:
-                                    <span id="counter">
-                                        0
-                                    </span>
-                                </small>
-                            </button>
-                    <div id="ledGroupListContainer">
-
-                    </div>
+        <div id="led-wrapper" class="active">
+            <div id="ledGroupNamesList" class="active">
+                <button class="btn btn-danger btn-block" onclick="clearLED()">
+                    LEDs ausschalten
+                    <br />
+                    <small>
+                        Aktive LEDs:
+                        <span id="counter">
+                            0
+                        </span>
+                    </small>
+                </button>
+                <div id="ledGroupListContainer">
                 </div>
+                <button type="button" class="connectSidebarCollapse btn btn-info btn-block">
+                    <span>Mit Netzwerk verbinden</span>
+                </button>
             </div>
+            <div id="ledGroupWrapper">
+                <!-- Contains the LED Group sidebars-->
+            </div>
+        </div>
 
-        </section>
 
 
-        <main class="main">
-            <button type="button" class="ledSidebarCollapse home-btn btn btn-info btn-block">
-                <span>LEDs steuern</span>
-            </button>
-            <button type="button" class="connectSidebarCollapse home-btn btn btn-info btn-block">
-                <span>Mit Netzwerk verbinden</span>
-            </button>
-
-        </main>
 
         <section id="connectSidebar">
             <button class="connectSidebarCollapse btn btn-secondary btn-block">
-                >> Sidebar schliessen
+                << Zurück
             </button>
             <button onclick="closeAccessPoint()" class="btn btn-warning btn-block">
                 Das SmartRelief Netzwerk schliessen </br>
@@ -66,7 +56,8 @@
                     geschlossen werden. Sollte dieses wieder gebraucht werden, kann das Smart Relief einfach
                     neugestartet werden</small>
             </button>
-            <button class="btn btn-primary btn-block" type="button" data-toggle="collapse" data-target="#connectToWLANForm" aria-expanded="false" aria-controls="connectToWLANForm">
+            <button class="btn btn-primary btn-block" type="button" data-toggle="collapse"
+                data-target="#connectToWLANForm" aria-expanded="false" aria-controls="connectToWLANForm">
                 Mit dem eigenen WLAN Neztwerk verbinden
             </button>
             </p>
@@ -76,14 +67,14 @@
                         <form>
                             <div class="form-group">
                                 <label for="ssidInput">Netzwerk Name</label>
-                                <input name="ssid" class="form-control" id="ssidInput" aria-describedby="ssidHelp" placeholder="Netwerk Name">
-                                <small id="ssidHelp" class="form-text text-muted">We'll never share your email with
-                                    anyone
-                                    else.</small>
+                                <input name="ssid" class="form-control" id="ssidInput" aria-describedby="ssidHelp"
+                                    placeholder="Netwerk Name">
+                                <small id="ssidHelp" class="form-text text-muted">Der Name des WLAN-Netzwerkes</small>
                             </div>
                             <div class="form-group">
                                 <label for="wlanPasswordInput">Password</label>
-                                <input name="password" type="password" class="form-control" id="wlanPasswordInput" placeholder="Password">
+                                <input name="password" type="password" class="form-control" id="wlanPasswordInput"
+                                    placeholder="Password">
                             </div>
                             <button type="submit" class="btn btn-primary">Verbinden</button>
                         </form>
