@@ -167,13 +167,13 @@ function handleWebSocketData(data) {
                 document.getElementById(`ledInput-${ledNumber}`).checked = true;
                 count++;
             } catch (e) {
-                console.warn(e);
+                // console.warn(e);
             }
         } else {
             try {
                 document.getElementById(`ledInput-${ledNumber}`).checked = false;
             } catch (e) {
-                console.warn(e);
+                // console.warn(e);
             }
         }
     }

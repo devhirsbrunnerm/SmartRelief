@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="./variables.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <meta charset="utf-8" />
+</head>
+
+<body class='container'>
+    <h1>Validierung der "variables.js" Datei</h1>
+    In dieser Datei werden mögliche Fehler im variables.js dargestellt:
+    <h2>Allgemeine Fehler</h2>
+    <div id="general-errors" class="alert alert-success">Datei wurde erfolgreich geladen</div>
+    <h2>Warnungen Points:</h2>
+    <div id="points-warnings" class="alert alert-success">Sämtliche Punkte sind in "points" definiert</div>
+    <h2>Warnungen Groups:</h2>
+    <div id="points-in-points-in-groups" class="alert alert-success">Sämtliche Punkte sind in "groups" erwähnt</div>
+    <div id="points-in-groups-in-points" class="alert alert-success">Sämtliche Punkte in "groups" existieren auch in
+        "points"</div>
+    <div id="duplicate-points" class="alert alert-success">Keine Punkte in 2 Gruppen</div>
+</body>
+<script>
+    checkGeneralSyntaxErrors();
+    checkPointsWarnings();
+    checkIfPointsAreInGroups();
+    checkIfPointsInGroupAreInPoints();
+    checkIfDuplicateInGroup();
+
+    function checkGeneralSyntaxErrors() {
+        try {
+            let p = points;
+            let g = groups
+        } catch (e) {
+            let elem = document.getElementById('general-errors');
+            elem.innerText = `Grundlegender Fehler beim Laden der variables.js Datei.
+            Dies liegt wahrscheinlich an einer fehlerhaften Syntax bei einer der Variabelen. 
+            Im Visual Studio Code überprüfen wo es eine rote Linie hat. Dies kann beispielsweise
+            durch eine fehlende } verursacht werden oder durch ein fehlendes Komma usw.`
+            elem.setAttribute('class', 'alert alert-danger')
+        }
+    }
+
+    function checkPointsWarnings() {
+        let missingPoints = ''
+        for (let i = 0; i < Object.keys(points).length; i++) {
+            if (points[i] == undefined) {
+                missingPoints += `${i}, `
+            }
+        }
+        if (missingPoints != '') {
+            let elem = document.getElementById('points-warnings');
+            elem.innerText = `Die folgenden Punkte sind nicht in points hinterlegt:
+            ${missingPoints}`
+            elem.setAttribute('class', 'alert alert-warning')
+        }
+    }
+
+    function checkIfPointsAreInGroups() {
+        let missingPointsInGroups = '';
+        Object.keys(points).forEach(point => {
+            let isThere = false;
+            groups.forEach(group => {
+                if (group[2].includes(parseInt(point))) {
+                    isThere = true;
+                }
+            })
+            if (!isThere) {
+                missingPointsInGroups += `${point}, `
+            }
+        })
+        if (missingPointsInGroups != '') {
+            let elem = document.getElementById('points-in-points-in-groups');
+            elem.innerText = `Die folgenden Punkte sind nicht in keiner Gruppe hinterlegt:
+            ${missingPointsInGroups}`
+            elem.setAttribute('class', 'alert alert-warning')
+        }
+    }
+
+    function checkIfPointsInGroupAreInPoints() {
+        let missingPoints = '';
+        let keys = Object.keys(points);
+        groups.forEach(group => {
+            group[2].forEach(pointInGroup => {
+                if (!keys.includes(pointInGroup.toString())) {
+                    missingPoints += `${pointInGroup} (in Gruppe ${group[0]}), `
+                }
+            })
+        })
+        if (missingPoints != '') {
+            let elem = document.getElementById('points-in-groups-in-points');
+            elem.innerText = `Die folgenden Punkte existieren in einer Gruppe, nicht aber in den "points":
+            ${missingPoints}`
+            elem.setAttribute('class', 'alert alert-danger')
+        }
+    }
+
+    function checkIfDuplicateInGroup() {
+        let duplicatePoints = '';
+        groups.forEach(group => {
+            group[2].forEach(pointInGroup => {
+                groups.forEach(checkGroup => {
+                    if (checkGroup != group && checkGroup[2].includes(pointInGroup)) {
+                        duplicatePoints += `${pointInGroup} (in ${group[0]} und ${checkGroup[0]}), `
+                    }
+                })
+            })
+        });
+        if (duplicatePoints != '') {
+            let elem = document.getElementById('duplicate-points');
+            elem.innerText = `Die folgenden Punkte sind in 2 Gruppen:
+            ${duplicatePoints}`
+            elem.setAttribute('class', 'alert alert-danger')
+        }
+    }
+</script>
+
+</html>

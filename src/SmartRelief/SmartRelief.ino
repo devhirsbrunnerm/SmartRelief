@@ -339,6 +339,13 @@ void startServer() {
 }
 
 void startWiFi() { // Start a Wi-Fi access point, and try to connect to some given access points. Then wait for either an AP or STA connection
+  WiFi.mode(WIFI_AP_STA); // Set the mode so that it works as a station and connects to an access point 
+  WiFi.softAP(ssid, password);             // Start the access point
+  Serial.print("Access Point \"");
+  Serial.print(ssid);
+  Serial.println("\" started\r\n");
+  Serial.println("\r\n");
+  
   Serial.println();
   Serial.println("Connected!");
   Serial.print("IP address for own network ");
@@ -347,13 +354,7 @@ void startWiFi() { // Start a Wi-Fi access point, and try to connect to some giv
   Serial.print("IP address for home network ");
   Serial.print(" : ");
   Serial.print(WiFi.softAPIP());
-  
-  WiFi.mode(WIFI_AP_STA); // Set the mode so that it works as a station and connects to an access point 
-  WiFi.softAP(ssid, password);             // Start the access point
-  Serial.print("Access Point \"");
-  Serial.print(ssid);
-  Serial.println("\" started\r\n");
-  Serial.println("\r\n");
+
 }
 
 void startSPIFFS() { // Start the SPIFFS and list all contents
