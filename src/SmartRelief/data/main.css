@@ -1,14 +1,15 @@
 /* --------------- Main Sidebar Stylings ------------*/
-
-@media only screen and (min-width: 1024px) {
-    html {
-        font-size: 50%;
-    }
-}
-
 html {
     font-size: 400%;
 }
+
+@media only screen and (min-width: 1000px) {
+    html {
+        font-size: 150%;
+    }
+}
+
+
 
 html,
 body,
@@ -146,10 +147,10 @@ main {
 .switch {
     position: relative;
     display: inline-block;
-    width: 120px;
-    height: 68px;
+    width: 2.5rem;
+    height: 1.5rem;
     color: white;
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
 }
 
 
@@ -174,10 +175,10 @@ main {
 .slider:before {
     position: absolute;
     content: "";
-    height: 52px;
-    width: 52px;
-    left: 8px;
-    bottom: 8px;
+    height: 1.2rem;
+    width: 1.2rem;
+    left: 0.15rem;
+    bottom: 0.15rem;
     background-color: white;
     -webkit-transition: 0.4s;
     transition: 0.4s;
@@ -187,21 +188,19 @@ input:checked+.slider {
     background-color: #2196f3;
 }
 
-input:focus+.slider {
-    box-shadow: 0 0 1px #2196f3;
-}
+
 
 input:checked+.slider:before {
-    -webkit-transform: translateX(52px);
-    -ms-transform: translateX(52px);
-    transform: translateX(52px);
+    -webkit-transform: translateX(1rem);
+    -ms-transform: translateX(1rem);
+    transform: translateX(1rem);
 }
 
 
 /* Rounded sliders */
 
 .slider.round {
-    border-radius: 68px;
+    border-radius: 0.75rem;
 }
 
 .slider.round:before {
